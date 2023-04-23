@@ -7,6 +7,7 @@ function TextWindow(props) {
   const [generatedTxt,setGeneratedTxt]=useState('')
   const [continuationText,setContinuationText]=useState('')
 
+
   const summarizeTxt = async () => {
     const data = { body: inputText };
     try {
@@ -42,12 +43,15 @@ function TextWindow(props) {
 
   const handleChange = (event) => {
     setInputText(event.target.value);
+    setContinuationText('');
+    
   };
-
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     await generateTxtContinue()
     await summarizeTxt();
+     
   };
   const handleClick = async (event) => {
     await generateTxt();
@@ -56,13 +60,17 @@ function TextWindow(props) {
   useEffect(() => {
     setInputText(generatedTxt);
   }, [generatedTxt]);
+  useEffect(() => {
+    setInputText(inputText + " " + continuationText);
+  }, [continuationText]);
+
   return (
     <>
       <div className="text-window">
         <h2>My Crazy Text</h2>
         <button onClick={()=>handleClick()} className='generateBtn'>Generate Random</button>
         <form onSubmit={handleSubmit}>
-          <textarea value={inputText+" "+continuationText} onChange={handleChange} />
+          <textarea value={inputText} onChange={handleChange} />
           <button type="submit">Compute</button>
         </form>
       </div>
