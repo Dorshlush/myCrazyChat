@@ -1,6 +1,7 @@
 import React, { useState ,useEffect} from 'react';
 import axios from 'axios';
 
+// import { Storage } from '../../amplify/backend/storage';
 function TextWindow(props) {
   const [inputText, setInputText] = useState('');
   const [summaryTxt, setSummaryTxt] = useState('');
@@ -41,6 +42,11 @@ function TextWindow(props) {
     }
   };
 
+  // const saveData = async (data) => {
+  //   const result = await Storage.put('webData.txt', data);
+  //   console.log(result);
+  // }
+
   const handleChange = (event) => {
     setInputText(event.target.value);
     setContinuationText('');
@@ -51,6 +57,10 @@ function TextWindow(props) {
     event.preventDefault();
     await generateTxtContinue()
     await summarizeTxt();
+    // const data={input:inputText,
+    // summarized_Text:summaryTxt,
+    // text_continueation:continuationText}
+    // await saveData(data)
      
   };
   const handleClick = async (event) => {
