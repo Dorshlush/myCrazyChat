@@ -1,14 +1,16 @@
 import React, { useState ,useEffect} from 'react';
 import axios from 'axios';
+import ClipLoader from 'react-spinners/ClipLoader'
 
-// import { Storage } from '../../amplify/backend/storage';
+
 function TextWindow(props) {
-  const [inputText, setInputText] = useState('');
-  const [summaryTxt, setSummaryTxt] = useState('');
-  const [generatedTxt,setGeneratedTxt]=useState('')
-  const [continuationText,setContinuationText]=useState('')
+  const [inputText, setInputText] = useState('');//saves the user input
+  const [summaryTxt, setSummaryTxt] = useState('');// saves the summary input from the function
+  const [generatedTxt,setGeneratedTxt]=useState('')//saves the random text generated
+  const [continuationText,setContinuationText]=useState('')// save the continuation generated text
+  const [isLoading, setIsLoading] = useState(false);// used for the loading animation
 
-
+//Post request sent to the restful api to active the lambda function, in this case to get the summarized text
   const summarizeTxt = async () => {
     const data = { body: inputText };
     try {
@@ -20,6 +22,8 @@ function TextWindow(props) {
       console.log(error.message);
     }
   };
+
+  //function that i decided to add, generates a random text!@
   const generateTxt = async () => {
     
     try {
@@ -30,6 +34,8 @@ function TextWindow(props) {
       console.log(error.message);
     }
   };
+
+  //the second function, activate the second function and generate a continuation text input
   const generateTxtContinue = async () => {
     
     try {
@@ -42,31 +48,27 @@ function TextWindow(props) {
     }
   };
 
-  // const saveData = async (data) => {
-  //   const result = await Storage.put('webData.txt', data);
-  //   console.log(result);
-  // }
+
 
   const handleChange = (event) => {
     setInputText(event.target.value);
     setContinuationText('');
     
   };
-  
+  //activate both functions
   const handleSubmit = async (event) => {
     event.preventDefault();
+    HandleLoading()
     await generateTxtContinue()
     await summarizeTxt();
-    // const data={input:inputText,
-    // summarized_Text:summaryTxt,
-    // text_continueation:continuationText}
-    // await saveData(data)
-     
+  
   };
   const handleClick = async (event) => {
-    await generateTxt();
+    HandleLoading()
+    await generateTxt()
+    setInputText(generatedTxt);
   };
-  
+  //keep the dom updated
   useEffect(() => {
     setInputText(generatedTxt);
   }, [generatedTxt]);
@@ -74,6 +76,15 @@ function TextWindow(props) {
     setInputText(inputText + " " + continuationText);
   }, [continuationText]);
 
+  //handle the animation
+  const HandleLoading = () => {
+    setIsLoading(true);
+    // Perform asynchronous operation here
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000); // Simulate delay
+  };
+  
   return (
     <>
       <div className="text-window">
@@ -81,6 +92,7 @@ function TextWindow(props) {
         <button onClick={()=>handleClick()} className='generateBtn'>Generate Random</button>
         <form onSubmit={handleSubmit}>
           <textarea value={inputText} onChange={handleChange} />
+          <br/>
           <button type="submit">Compute</button>
         </form>
       </div>
@@ -88,9 +100,15 @@ function TextWindow(props) {
         <h2>My Crazy Summarizer</h2>
         <form>
           <textarea value={summaryTxt} readOnly />
+          <br/>
           <button onClick={() => setSummaryTxt('')}>Reset</button>
         </form>
       </div>
+      {isLoading && (
+        <div className="loading-overlay">
+          <ClipLoader color="#0077ff" size={100} />
+        </div>
+      )}
     </>
   );
 }
