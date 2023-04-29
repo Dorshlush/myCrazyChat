@@ -15,7 +15,7 @@ function TextWindow(props) {
     const data = { body: inputText };
     try {
       const response = await axios.post(
-        'https://w5xddkfv70.execute-api.us-east-1.amazonaws.com/Prod/summarize',
+        'https://c8kbi5tdzc.execute-api.us-east-1.amazonaws.com/Prod/sum',
         data);
       setSummaryTxt(response.data.message);
     } catch (error) {
@@ -41,7 +41,7 @@ function TextWindow(props) {
     try {
       const data={body:inputText}
       const response = await axios.post(
-        ' https://w5xddkfv70.execute-api.us-east-1.amazonaws.com/Prod/generateTextContinuation',data);
+        'https://c8kbi5tdzc.execute-api.us-east-1.amazonaws.com/Prod/generate',data);
         setContinuationText(response.data.message);
     } catch (error) {
       console.log(error.message);
