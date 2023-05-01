@@ -7,6 +7,8 @@ function TextWindowCopy2(props) {
   const [continuationText, setContinuationText] = useState(" "); // save the continuation generated text
   const [isLoading, setIsLoading] = useState(false); // used for the loading animation
   const [summaryTxt, setSummaryTxt] = useState('');// saves the summary input from the function
+  const [errorMessage, setErrorMessage] = useState(""); // error message for short input
+
 
   const summarizeTxt = async () => {
     setIsLoading(true);
@@ -27,15 +29,14 @@ function TextWindowCopy2(props) {
     setIsLoading(true);
 
     try {
-      const data = { body: inputText };
       const response = await axios.post(
-        " https://c8kbi5tdzc.execute-api.us-east-1.amazonaws.com/Prod/generate",
-        data
+        "https://c8kbi5tdzc.execute-api.us-east-1.amazonaws.com/Prod/generate",
+        inputText
       );
-      let output = response.data.slice(11 + inputText.length);
+      let output = response.data;
 
       setContinuationText(output);
-      console.log(output);
+      console.log(response.data);
     } catch (error) {
       console.log(error.message);
     }
@@ -45,7 +46,7 @@ function TextWindowCopy2(props) {
 
   useEffect(() => {
     if (continuationText !== "") {
-      setInputText((prevInputText) => prevInputText + " " + continuationText);
+      setInputText( continuationText);
       setContinuationText("");
     }
   }, [continuationText]);
@@ -57,8 +58,16 @@ function TextWindowCopy2(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (inputText.split(" ").length < 10) {
+      setErrorMessage(
+        "We recommend writing text longer than 10 words to get good results."
+      );
+      return;
+    }
+
+    setErrorMessage("");
     await generateTxtContinue();
-    setInputText(inputText+" "+continuationText)
   };
 
   const handleSummsrize= async (event)=>{
@@ -70,20 +79,22 @@ function TextWindowCopy2(props) {
   return (
     <>
       <div className="text-window">
-        <h2>My Crazy Text!</h2>
+        <h2>⚡ My Crazy Generator!</h2>
 
         <form onSubmit={handleSubmit}>
           <textarea value={inputText} onChange={handleChange} />
           <br />
-          <button type="submit">Generate</button>
+          <button className="btn" type="submit">Generate</button>
+          <button onClick={handleSummsrize} >Summarize</button>
         </form>
+        {errorMessage && <p>{errorMessage}</p>}
       </div>
       <div className="text-window">
-        <h2>My Crazy Generator!</h2>
+        <h2>⚡ My Crazy Summarizer!</h2>
         <form onSubmit={handleSummsrize}>
           <textarea value={summaryTxt} readOnly />
           <br />
-          <button type="submit">Summarize</button>
+         
         </form>
       </div>
       {isLoading && (

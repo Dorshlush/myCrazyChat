@@ -9,8 +9,8 @@ function App() {
 
   return (
     <div className="app">
-      {/* <TextWindowCopy2/> */}
-      <TextWindow  />
+      <TextWindowCopy2/>
+      {/* <TextWindow  /> */}
       
       
     </div>
