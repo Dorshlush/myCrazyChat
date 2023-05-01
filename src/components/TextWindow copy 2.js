@@ -72,8 +72,16 @@ function TextWindowCopy2(props) {
 
   const handleSummsrize= async (event)=>{
     event.preventDefault();
-    await summarizeTxt()
 
+    if (inputText.split(" ").length < 10) {
+      setErrorMessage(
+        "We recommend writing text longer than 10 words to get good results."
+      );
+      return;
+    }
+
+    setErrorMessage("");
+    await summarizeTxt();
   }
 
   return (
@@ -96,9 +104,11 @@ function TextWindowCopy2(props) {
           <br />
          
         </form>
+        
       </div>
       {isLoading && (
         <div className="loading-overlay">
+
           <ClipLoader color="#0077ff" size={100} />
         </div>
       )}
