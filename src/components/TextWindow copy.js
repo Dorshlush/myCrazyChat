@@ -12,7 +12,9 @@ function TextWindow(props) {
 
 //Post request sent to the restful api to active the lambda function, in this case to get the summarized text
   const summarizeTxt = async () => {
+    setIsLoading(true);
     const data = { body: inputText };
+    
     try {
       const response = await axios.post(
         'https://i3xpbq6oul.execute-api.us-east-1.amazonaws.com/Prod/sum',
@@ -21,23 +23,13 @@ function TextWindow(props) {
     } catch (error) {
       console.log(error.message);
     }
+    setIsLoading(false);
   };
 
-  //function that i decided to add, generates a random text!@
-  const generateTxt = async () => {
-    
-    try {
-      const response = await axios.get(
-        ' https://w5xddkfv70.execute-api.us-east-1.amazonaws.com/Prod/generate');
-        setGeneratedTxt(response.data.message);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
 
   //the second function, activate the second function and generate a continuation text input
   const generateTxtContinue = async () => {
-    
+    setIsLoading(true);
     try {
       const data={body:inputText}
       const response = await axios.post(
@@ -46,6 +38,7 @@ function TextWindow(props) {
     } catch (error) {
       console.log(error.message);
     }
+    setIsLoading(false);
   };
 
 
@@ -58,38 +51,25 @@ function TextWindow(props) {
   //activate both functions
   const handleSubmit = async (event) => {
     event.preventDefault();
-    HandleLoading()
+    
     await generateTxtContinue()
     await summarizeTxt();
   
   };
-  const handleClick = async (event) => {
-    HandleLoading()
-    await generateTxt()
-    setInputText(generatedTxt);
-  };
+
   //keep the dom updated
-  useEffect(() => {
-    setInputText(generatedTxt);
-  }, [generatedTxt]);
+
   useEffect(() => {
     setInputText(inputText + " " + continuationText);
   }, [continuationText]);
 
   //handle the animation
-  const HandleLoading = () => {
-    setIsLoading(true);
-    // Perform asynchronous operation here
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000); // Simulate delay
-  };
-  
+
   return (
     <>
       <div className="text-window">
         <h2>My Crazy Text</h2>
-        <button onClick={()=>handleClick()} className='generateBtn'>Generate Random</button>
+        
         <form onSubmit={handleSubmit}>
           <textarea value={inputText} onChange={handleChange} />
           <br/>
